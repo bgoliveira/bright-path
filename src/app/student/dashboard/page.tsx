@@ -14,6 +14,7 @@ import {
   demoDeadlines,
 } from "@/components/student/UpcomingDeadlines";
 import { EncouragementBanner } from "@/components/student/EncouragementBanner";
+import { PendingLinkRequestsBanner } from "@/components/student/PendingLinkRequestsBanner";
 import { BookOpen, Calendar, Flame, CheckCircle2 } from "lucide-react";
 
 export default function StudentDashboard() {
@@ -32,6 +33,11 @@ export default function StudentDashboard() {
       />
 
       <div className="p-8">
+        {/* Pending Link Requests Banner */}
+        <div className="mb-4">
+          <PendingLinkRequestsBanner />
+        </div>
+
         {/* Encouragement Banner */}
         <div className="mb-8">
           <EncouragementBanner

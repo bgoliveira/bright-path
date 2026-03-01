@@ -13,6 +13,7 @@ import {
   Users,
   LogOut,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
 
 interface NavItem {
@@ -45,6 +46,11 @@ const studentNavItems: NavItem[] = [
     label: "Report Cards",
     href: "/student/report-cards",
     icon: <FileText className="w-5 h-5" />,
+  },
+  {
+    label: "Link Requests",
+    href: "/student/link-requests",
+    icon: <UserPlus className="w-5 h-5" />,
   },
   {
     label: "Settings",
