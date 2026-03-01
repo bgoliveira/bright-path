@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAuthUrl } from "@/lib/google/oauth";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const authUrl = getAuthUrl();
+    // Get role from query parameter (set by signup page)
+    const role = request.nextUrl.searchParams.get("role") || "student";
+
+    // Pass role through OAuth state parameter
+    const authUrl = getAuthUrl(role);
     return NextResponse.redirect(authUrl);
   } catch (error) {
     console.error("Error generating Google auth URL:", error);

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -72,7 +73,20 @@ const parentNavItems: NavItem[] = [
 
 export function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navItems = role === "student" ? studentNavItems : parentNavItems;
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-secondary-100 flex flex-col shadow-sm">
@@ -146,9 +160,15 @@ export function Sidebar({ role }: SidebarProps) {
             <p className="text-xs text-secondary-500 truncate">alex@example.com</p>
           </div>
         </div>
-        <button className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-secondary-500 hover:bg-red-50 hover:text-red-600 w-full transition-all duration-200">
-          <LogOut className="w-4 h-4" />
-          <span className="text-sm font-medium">Log out</span>
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-secondary-500 hover:bg-red-50 hover:text-red-600 w-full transition-all duration-200 disabled:opacity-50"
+        >
+          <LogOut className={cn("w-4 h-4", isLoggingOut && "animate-spin")} />
+          <span className="text-sm font-medium">
+            {isLoggingOut ? "Logging out..." : "Log out"}
+          </span>
         </button>
       </div>
     </aside>

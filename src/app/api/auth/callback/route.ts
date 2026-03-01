@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const error = searchParams.get("error");
+  const state = searchParams.get("state"); // Contains role from signup
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
@@ -77,9 +78,8 @@ export async function GET(request: NextRequest) {
         .eq("id", userId);
     } else {
       // New user - create auth user and profile
-      // Default to student role, can be changed later
-      // In production, you'd handle role selection properly
-      userRole = "student";
+      // Use role from OAuth state parameter, default to student
+      userRole = state === "parent" ? "parent" : "student";
 
       // Create user in Supabase Auth
       const { data: authData, error: authError } =

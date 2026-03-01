@@ -15,10 +15,8 @@ export default function SignupPage() {
     if (!role) return;
 
     setIsLoading(true);
-    // Store role in sessionStorage to use after OAuth callback
-    sessionStorage.setItem("signupRole", role);
-    // Redirect to Google OAuth flow
-    window.location.href = "/api/auth/google";
+    // Pass role as query parameter to OAuth flow
+    window.location.href = `/api/auth/google?role=${role}`;
   };
 
   return (
