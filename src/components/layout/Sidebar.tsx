@@ -22,8 +22,15 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
+interface UserInfo {
+  fullName: string;
+  email: string;
+  avatarUrl?: string | null;
+}
+
 interface SidebarProps {
   role: "student" | "parent";
+  user?: UserInfo;
 }
 
 const studentNavItems: NavItem[] = [
@@ -77,11 +84,20 @@ const parentNavItems: NavItem[] = [
   },
 ];
 
-export function Sidebar({ role }: SidebarProps) {
+export function Sidebar({ role, user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navItems = role === "student" ? studentNavItems : parentNavItems;
+
+  const displayName = user?.fullName || "User";
+  const displayEmail = user?.email || "";
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -158,12 +174,20 @@ export function Sidebar({ role }: SidebarProps) {
       {/* User Section */}
       <div className="p-4 border-t border-secondary-100">
         <div className="flex items-center gap-3 px-4 py-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-secondary-200 to-secondary-300 rounded-full flex items-center justify-center">
-            <span className="text-secondary-600 font-semibold">A</span>
-          </div>
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={displayName}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-gradient-to-br from-secondary-200 to-secondary-300 rounded-full flex items-center justify-center">
+              <span className="text-secondary-600 font-semibold">{initials}</span>
+            </div>
+          )}
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-secondary-900 truncate">Alex</p>
-            <p className="text-xs text-secondary-500 truncate">alex@example.com</p>
+            <p className="font-medium text-secondary-900 truncate">{displayName}</p>
+            <p className="text-xs text-secondary-500 truncate">{displayEmail}</p>
           </div>
         </div>
         <button
