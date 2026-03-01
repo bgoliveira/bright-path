@@ -17,13 +17,13 @@ export function getOAuth2Client() {
   );
 }
 
-export function getAuthUrl(state?: string): string {
+export function getAuthUrl(state?: string, forceConsent = false): string {
   const oauth2Client = getOAuth2Client();
 
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: GOOGLE_SCOPES,
-    prompt: "consent", // Force consent to get refresh token
+    ...(forceConsent && { prompt: "consent" }),
     state: state,
   });
 }
