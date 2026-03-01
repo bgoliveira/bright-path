@@ -1,11 +1,60 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sparkles, ArrowLeft } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Handle magic link tokens from URL hash
+    const handleMagicLink = async () => {
+      const hash = window.location.hash;
+      if (!hash || !hash.includes("access_token")) return;
+
+      setIsLoading(true);
+
+      // Parse hash parameters
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+
+      if (accessToken && refreshToken) {
+        const supabase = createClient();
+
+        // Set the session
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (error) {
+          console.error("Session error:", error);
+          setIsLoading(false);
+          return;
+        }
+
+        if (data.user) {
+          // Get user role from profile
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", data.user.id)
+            .single();
+
+          const profile = profileData as { role: string } | null;
+          const role = profile?.role || "student";
+          router.push(`/${role}/dashboard`);
+        }
+      }
+    };
+
+    handleMagicLink();
+  }, [router]);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);

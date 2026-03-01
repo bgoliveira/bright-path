@@ -54,9 +54,16 @@ export async function updateSession(request: NextRequest) {
 
   // If user is authenticated and trying to access login/signup, redirect to dashboard
   if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup")) {
+    // Get user role from profile
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    const role = profile?.role || "student";
     const url = request.nextUrl.clone();
-    // TODO: Redirect based on user role (student or parent)
-    url.pathname = "/dashboard";
+    url.pathname = `/${role}/dashboard`;
     return NextResponse.redirect(url);
   }
 
